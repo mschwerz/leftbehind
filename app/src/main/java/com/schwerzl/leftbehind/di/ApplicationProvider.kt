@@ -3,12 +3,15 @@ package com.schwerzl.leftbehind.di
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
 import android.content.Context
+import androidx.room.Room
+import com.schwerzl.leftbehind.database.AppDatabase
 import com.schwerzl.leftbehind.datasource.PermissionCheck
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.Dispatchers
 import javax.inject.Singleton
 
 @Module
@@ -31,4 +34,29 @@ class ApplicationProvider {
     ): PermissionCheck {
         return PermissionCheck(context)
     }
+
+    @Provides
+    @Singleton
+    fun appDatabase(
+        @ApplicationContext context: Context
+    ) : AppDatabase {
+        return Room.databaseBuilder(context, AppDatabase::class.java, "database-name").build()
+    }
+
+    @Provides
+    @Singleton
+    fun bleDeviceDao(
+        appDatabase: AppDatabase
+    ) = appDatabase.deviceDao()
+
+    @Provides
+    @Singleton
+    fun geoFenceDao(
+        appDatabase: AppDatabase
+    ) = appDatabase.userGeoFenceDao()
+
+
+    @Provides
+    fun offloadDispatcher() = Dispatchers.IO
+
 }

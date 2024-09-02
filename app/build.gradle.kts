@@ -3,7 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
-
+    kotlin("plugin.serialization") version "1.9.0" // Or your Kotlin version
 }
 
 android {
@@ -57,6 +57,7 @@ dependencies {
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.4")
     implementation("androidx.activity:activity-compose:1.9.1")
+    implementation("androidx.compose.material3:material3-adaptive-navigation-suite:1.0.0-alpha07")
     implementation(platform("androidx.compose:compose-bom:2024.08.00"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
@@ -76,6 +77,14 @@ dependencies {
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
     kapt("androidx.hilt:hilt-compiler:1.2.0")
     implementation("com.jakewharton.timber:timber:5.0.1")
+    implementation("androidx.navigation:navigation-compose:2.8.0-rc01")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0") // Or latest version
+
+    implementation("androidx.room:room-runtime:2.6.1")
+    annotationProcessor("androidx.room:room-compiler:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    kapt("androidx.room:room-compiler:2.6.1")
+
 
 }
 
