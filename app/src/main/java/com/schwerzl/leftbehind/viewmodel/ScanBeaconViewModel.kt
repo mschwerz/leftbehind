@@ -1,16 +1,22 @@
 package com.schwerzl.leftbehind.viewmodel
 
+import android.Manifest
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.schwerzl.leftbehind.database.DeviceDao
 import com.schwerzl.leftbehind.database.DeviceEntity
 import com.schwerzl.leftbehind.datasource.BLEDataSource
 import com.schwerzl.leftbehind.datasource.FoundDevices
+import com.schwerzl.leftbehind.datasource.PermissionCheck
 import com.schwerzl.leftbehind.screens.BluetoothUIDevice
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.flow.stateIn
@@ -24,8 +30,13 @@ const val DEVICE_TIMEOUT = 10_000
 class ScanBeaconViewModel @Inject constructor(
     private val bleDataSource: BLEDataSource,
     private val deviceDao: DeviceDao,
+    private val permissionCheck: PermissionCheck,
     private val offloadDispatcher : CoroutineDispatcher
     ): ViewModel(){
+
+        private val btPermssion = MutableStateFlow(
+            permissionCheck.check(Manifest.permission.BLUETOOTH_SCAN)
+        )
 
         private val trackedDevices = deviceDao.getAll().map {
             it.map { deviceEntity ->
@@ -36,7 +47,11 @@ class ScanBeaconViewModel @Inject constructor(
                 ) }
         }
 
-    private val scanning = bleDataSource.scanDevices()
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val scanning = btPermssion.filter { it }
+        .flatMapLatest {
+            bleDataSource.scanDevices()
+        }
         .scan(mapOf<String, FoundDevices>()){
                 accumulator, value -> accumulator.plus(value.associateBy { it.address })
         }.map{
@@ -88,6 +103,11 @@ class ScanBeaconViewModel @Inject constructor(
             }
         }
     }
+
+    fun onBTPermissionResult(granted: Boolean){
+        btPermssion.value = granted
+    }
+
 }
 
 

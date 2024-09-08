@@ -15,6 +15,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.schwerzl.leftbehind.screens.GeoFenceSelectionScreen
 import com.schwerzl.leftbehind.screens.ScanBeaconScreen
 import kotlinx.serialization.Serializable
 
@@ -49,7 +50,8 @@ fun NavScreen(
             }
 
             composable<MapScreen>{
-                ScanBeaconScreen()
+                //GeofencingScreen()
+                GeoFenceSelectionScreen()
             }
             composable<SettingsScreen>{
                 ScanBeaconScreen()

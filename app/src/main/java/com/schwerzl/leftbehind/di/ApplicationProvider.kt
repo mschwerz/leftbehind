@@ -4,6 +4,8 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
 import android.content.Context
 import androidx.room.Room
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.schwerzl.leftbehind.database.AppDatabase
 import com.schwerzl.leftbehind.datasource.PermissionCheck
 import dagger.Module
@@ -58,5 +60,13 @@ class ApplicationProvider {
 
     @Provides
     fun offloadDispatcher() = Dispatchers.IO
+
+    @Provides
+    @Singleton
+    fun fusedLocationProvider(@ApplicationContext context: Context) : FusedLocationProviderClient =
+        LocationServices.getFusedLocationProviderClient(context)
+
+    @Provides
+    fun applicationContext(@ApplicationContext context: Context) = context
 
 }

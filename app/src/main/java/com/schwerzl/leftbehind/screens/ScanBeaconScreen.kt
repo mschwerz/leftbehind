@@ -44,6 +44,8 @@ fun ScanBeaconScreen(
     val permissionRequest = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
     ) {
+        it[Manifest.permission.BLUETOOTH_SCAN]?.let { it1 -> viewModel.onBTPermissionResult(it1) }
+
         backgroundRequest.launch(
             Manifest.permission.ACCESS_BACKGROUND_LOCATION
         )

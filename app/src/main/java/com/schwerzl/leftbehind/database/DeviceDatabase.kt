@@ -5,6 +5,7 @@ import androidx.room.Dao
 import androidx.room.Database
 import androidx.room.Delete
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.Insert
 import androidx.room.PrimaryKey
 import androidx.room.Query
@@ -30,14 +31,30 @@ interface DeviceDao{
 }
 
 
-
+//The user requested geofence
 @Entity
 data class UserGeoFenceEntity(
-     @PrimaryKey val uid: Int,
+     @PrimaryKey(autoGenerate = true)
+     val uid: Int,
      @ColumnInfo(name = "latitude") val latitude: Double,
      @ColumnInfo(name = "longitude") val longitude: Double,
-     @ColumnInfo(name = "radius") val radius: Int,
+     @ColumnInfo(name = "radius") val radius: Float,
      @ColumnInfo(name = "name") val name: String,
+)
+
+
+@Entity(
+    foreignKeys = [
+        ForeignKey(entity = UserGeoFenceEntity::class, parentColumns = ["uid"], childColumns = ["geofenceId"],
+            onUpdate = ForeignKey.CASCADE, onDelete = ForeignKey.CASCADE)
+    ]
+)
+
+//Connects the user requested geofence to the device's geofence manager
+data class DeviceRegisteredGeoFenceEntity(
+    @PrimaryKey
+    @ColumnInfo(name= "geofenceId") val geofenceId: Int,
+    @ColumnInfo(name= "deviceRequestIdentifier") val requestId : String,
 )
 
 @Dao
@@ -52,8 +69,16 @@ interface UserGeoFenceDao{
     fun delete(geofence: UserGeoFenceEntity)
 }
 
-@Database(entities = [UserGeoFenceEntity::class, DeviceEntity::class], version = 1)
+
+@Dao
+interface DeviceRegisteredGeoFenceDao{
+
+}
+
+@Database(entities = [UserGeoFenceEntity::class, DeviceEntity::class,
+    DeviceRegisteredGeoFenceEntity::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun deviceDao(): DeviceDao
     abstract fun userGeoFenceDao(): UserGeoFenceDao
+    abstract fun deviceRegisteredGeoFenceDao(): DeviceRegisteredGeoFenceDao
 }
