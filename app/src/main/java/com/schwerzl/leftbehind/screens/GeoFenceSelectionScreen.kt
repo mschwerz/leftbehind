@@ -37,7 +37,6 @@ import com.schwerzl.leftbehind.viewmodel.DataResult
 import com.schwerzl.leftbehind.viewmodel.GeoFenceViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.osmdroid.api.IMapController
 import org.osmdroid.config.Configuration
 import org.osmdroid.events.MapEventsReceiver
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
@@ -48,6 +47,14 @@ import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import timber.log.Timber
 
+data class GeoFenceUIData(
+    val name: String,
+    val lat: Double,
+    val long: Double,
+    val radius: Float
+)
+
+
 @Composable
 fun GeoFenceSelectionScreen(
     viewModel: GeoFenceViewModel = hiltViewModel()
@@ -55,7 +62,7 @@ fun GeoFenceSelectionScreen(
     val context = LocalContext.current
 
     val currentUserLocation by viewModel.currentUserLocation.collectAsStateWithLifecycle()
-
+    val geofences by viewModel.userGeoFences.collectAsStateWithLifecycle()
 
     Timber.d("Current User Location: $currentUserLocation")
     Configuration.getInstance().apply {
@@ -67,23 +74,42 @@ fun GeoFenceSelectionScreen(
     }
 
     GeoFenceScreen(
-        currentUserLocation
+        currentUserLocation,
+        geofences,
+        viewModel::selectedMapPoint
     )
 }
 
 @Composable
 @Preview
 fun GeoFenceScreen(
-    location: DataResult<Location?> = DataResult.Success(null)
+    location: DataResult<Location?> = DataResult.Success(null),
+    geofences: List<GeoFenceUIData> = emptyList(),
+    onUserMapTap: (Double, Double) -> Unit = {_,_ ->},
 ) {
 
-    var mapController by remember { mutableStateOf<IMapController?>(null) }
+    var composeMap by remember { mutableStateOf<MapView?>(null) }
+
+    val mapController = remember(composeMap) { composeMap?.controller }
     LaunchedEffect(location, mapController) {
         if(location is DataResult.Success){
             location.lst?.let {
                 mapController?.zoomTo(18.0)
                 mapController?.animateTo(GeoPoint(it.latitude, it.longitude))
             }
+        }
+    }
+
+    LaunchedEffect(geofences, composeMap) {
+        composeMap?.let { map ->
+            for(geofence in geofences) {
+                map.overlays.add(
+                    Marker(composeMap).apply {
+                        position = GeoPoint(geofence.lat, geofence.long)
+                    }
+                )
+            }
+            map.invalidate()
         }
     }
 
@@ -95,7 +121,8 @@ fun GeoFenceScreen(
                 setMultiTouchControls(true)
                 minZoomLevel = 5.0
             }
-            mapController = map.controller
+            composeMap = map
+
             val myLocationOverlay = MyLocationNewOverlay(map)
 
             map.controller.apply {
@@ -111,16 +138,20 @@ fun GeoFenceScreen(
             myLocationOverlay.enableMyLocation()
             map.overlays.add(myLocationOverlay)
 
-
             map.overlays.add(MapEventsOverlay(
-                object: MapEventsReceiver{
+                object: MapEventsReceiver {
                     override fun singleTapConfirmedHelper(p: GeoPoint?): Boolean {
                         Timber.d("Tapped this point: $p")
                         map.overlays.add(
                             Marker(map).apply {
                                 position = p
-                            })
-                        map.invalidate()
+                                isDraggable = true
+                            }
+                        )
+
+//                        p?.let {
+//                            onUserMapTap(p.latitude, p.longitude)
+//                        }
                         return true
                     }
 
@@ -128,7 +159,6 @@ fun GeoFenceScreen(
                         Timber.d("Long pressed this point: $p")
                         return true
                     }
-
                 }
             ))
             map

@@ -11,6 +11,7 @@ import androidx.room.PrimaryKey
 import androidx.room.Query
 import androidx.room.RoomDatabase
 import kotlinx.coroutines.flow.Flow
+import java.util.UUID
 
 @Entity
 data class DeviceEntity(
@@ -34,8 +35,8 @@ interface DeviceDao{
 //The user requested geofence
 @Entity
 data class UserGeoFenceEntity(
-     @PrimaryKey(autoGenerate = true)
-     val uid: Int,
+     @PrimaryKey
+     val uid: String = UUID.randomUUID().toString(),
      @ColumnInfo(name = "latitude") val latitude: Double,
      @ColumnInfo(name = "longitude") val longitude: Double,
      @ColumnInfo(name = "radius") val radius: Float,
@@ -67,6 +68,10 @@ interface UserGeoFenceDao{
 
     @Delete
     fun delete(geofence: UserGeoFenceEntity)
+
+    @Query("SELECT * FROM usergeofenceentity")
+    fun getAllFlow(): Flow<List<UserGeoFenceEntity>>
+
 }
 
 

@@ -1,14 +1,19 @@
 package com.schwerzl.leftbehind
 
 import android.app.Application
-import android.util.Log
 import dagger.hilt.android.HiltAndroidApp
+import timber.log.Timber
 
 @HiltAndroidApp
 open class LeftBehindApplication: Application() {
 
     override fun onCreate() {
         super.onCreate()
-        Log.d("LeftBehindApplication", "onCreate")
+
+        if (BuildConfig.DEBUG) {
+            Timber.plant(Timber.DebugTree())
+        }
+        Timber.d("Application Created")
+
     }
 }

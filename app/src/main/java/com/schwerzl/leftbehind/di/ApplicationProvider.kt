@@ -57,6 +57,12 @@ class ApplicationProvider {
         appDatabase: AppDatabase
     ) = appDatabase.userGeoFenceDao()
 
+    @Provides
+    @Singleton
+    fun deviceRegisteredGeoFenceDao(
+        appDatabase: AppDatabase
+    ) = appDatabase.deviceRegisteredGeoFenceDao()
+
 
     @Provides
     fun offloadDispatcher() = Dispatchers.IO
