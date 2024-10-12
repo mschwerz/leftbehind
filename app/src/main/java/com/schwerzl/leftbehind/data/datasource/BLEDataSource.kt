@@ -1,4 +1,4 @@
-package com.schwerzl.leftbehind.datasource
+package com.schwerzl.leftbehind.data.datasource
 
 import kotlinx.coroutines.flow.Flow
 

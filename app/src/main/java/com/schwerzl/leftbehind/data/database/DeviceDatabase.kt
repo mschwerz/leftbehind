@@ -1,4 +1,4 @@
-package com.schwerzl.leftbehind.database
+package com.schwerzl.leftbehind.data.database
 
 import androidx.room.ColumnInfo
 import androidx.room.Dao
@@ -10,6 +10,7 @@ import androidx.room.Insert
 import androidx.room.PrimaryKey
 import androidx.room.Query
 import androidx.room.RoomDatabase
+import com.schwerzl.leftbehind.models.UserGeoFence
 import kotlinx.coroutines.flow.Flow
 import java.util.UUID
 
@@ -41,7 +42,17 @@ data class UserGeoFenceEntity(
      @ColumnInfo(name = "longitude") val longitude: Double,
      @ColumnInfo(name = "radius") val radius: Float,
      @ColumnInfo(name = "name") val name: String,
-)
+){
+    fun toDomain() : UserGeoFence {
+        return UserGeoFence(
+            id = uid,
+            latitude = latitude,
+            longitude = longitude,
+            radius = radius,
+            name = name
+        )
+    }
+}
 
 
 @Entity(
@@ -62,6 +73,9 @@ data class DeviceRegisteredGeoFenceEntity(
 interface UserGeoFenceDao{
     @Query("SELECT * FROM usergeofenceentity")
     fun getAll(): List<UserGeoFenceEntity>
+
+    @Query("SELECT * FROM usergeofenceentity WHERE uid = :uuid")
+    fun getGeoFence(uuid: String) : UserGeoFenceEntity
 
     @Insert
     fun insertAll(vararg geofences: UserGeoFenceEntity)

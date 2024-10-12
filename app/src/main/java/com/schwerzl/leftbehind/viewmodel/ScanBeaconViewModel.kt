@@ -3,11 +3,11 @@ package com.schwerzl.leftbehind.viewmodel
 import android.Manifest
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.schwerzl.leftbehind.database.DeviceDao
-import com.schwerzl.leftbehind.database.DeviceEntity
-import com.schwerzl.leftbehind.datasource.BLEDataSource
-import com.schwerzl.leftbehind.datasource.FoundDevices
-import com.schwerzl.leftbehind.datasource.PermissionCheck
+import com.schwerzl.leftbehind.data.database.DeviceDao
+import com.schwerzl.leftbehind.data.database.DeviceEntity
+import com.schwerzl.leftbehind.data.datasource.BLEDataSource
+import com.schwerzl.leftbehind.data.datasource.FoundDevices
+import com.schwerzl.leftbehind.data.datasource.PermissionCheck
 import com.schwerzl.leftbehind.screens.BluetoothUIDevice
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher

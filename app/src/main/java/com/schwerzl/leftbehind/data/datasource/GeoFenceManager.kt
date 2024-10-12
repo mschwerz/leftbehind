@@ -1,37 +1,38 @@
-package com.schwerzl.leftbehind.datasource
+package com.schwerzl.leftbehind.data.datasource
 
 import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.location.Location
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.Geofence.GEOFENCE_TRANSITION_ENTER
 import com.google.android.gms.location.Geofence.GEOFENCE_TRANSITION_EXIT
 import com.google.android.gms.location.GeofencingRequest
 import com.google.android.gms.location.LocationServices
+import com.schwerzl.leftbehind.components.GeofenceBroadcastReceiver
 import kotlinx.coroutines.tasks.await
 import timber.log.Timber
+import javax.inject.Inject
 
 const val CUSTOM_INTENT_GEOFENCE = "GEOFENCE-TRANSITION-INTENT-ACTION"
 const val CUSTOM_REQUEST_CODE_GEOFENCE = 1001
 
-class GeofenceManager(context: Context) {
+data class LatLng(val lat: Double, val long: Double)
+
+
+class GeofenceManager @Inject constructor(context: Context) {
     private val client = LocationServices.getGeofencingClient(context)
     val geofenceList = mutableMapOf<String, Geofence>()
 
     private val geofencingPendingIntent by lazy {
-        PendingIntent.getBroadcast(
-            context,
-            CUSTOM_REQUEST_CODE_GEOFENCE,
-            Intent(CUSTOM_INTENT_GEOFENCE),
-            PendingIntent.FLAG_IMMUTABLE
-        )
+
+        val intent = Intent(context, GeofenceBroadcastReceiver::class.java)
+        PendingIntent.getBroadcast(context, 0, intent,     PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
     }
 
     fun addGeofence(
         key: String,
-        location: Location,
+        location: LatLng,
         radiusInMeters: Float = 100.0f,
         expirationTimeInMillis: Long = 30 * 60 * 1000,
     ) {
@@ -67,15 +68,15 @@ class GeofenceManager(context: Context) {
 
     private fun createGeofence(
         key: String,
-        location: Location,
+        location: LatLng,
         radiusInMeters: Float,
         expirationTimeInMillis: Long,
     ): Geofence {
         return Geofence.Builder()
             .setRequestId(key)
-            .setCircularRegion(location.latitude, location.longitude, radiusInMeters)
+            .setCircularRegion(location.lat, location.long, radiusInMeters)
             .setExpirationDuration(expirationTimeInMillis)
-            .setTransitionTypes(GEOFENCE_TRANSITION_ENTER or GEOFENCE_TRANSITION_EXIT)
+            .setTransitionTypes(GEOFENCE_TRANSITION_EXIT)
             .build()
     }
 

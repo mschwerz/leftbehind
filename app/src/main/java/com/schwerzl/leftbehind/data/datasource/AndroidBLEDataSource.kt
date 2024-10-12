@@ -1,4 +1,4 @@
-package com.schwerzl.leftbehind.datasource
+package com.schwerzl.leftbehind.data.datasource
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -16,7 +16,7 @@ import javax.inject.Inject
 class AndroidBLEDataSource @Inject constructor(
     private val bluetoothAdapter: BluetoothAdapter,
     private val permissionCheck: PermissionCheck
-): BLEDataSource{
+): BLEDataSource {
 
     override fun boundedDevices(): List<FoundDevices> {
         return if(permissionCheck.check(Manifest.permission.BLUETOOTH_CONNECT)){
@@ -50,6 +50,6 @@ class AndroidBLEDataSource @Inject constructor(
 
 @SuppressLint("MissingPermission")
 fun BluetoothDevice.toFoundDevice(
-) : FoundDevices{
+) : FoundDevices {
     return FoundDevices(this?.name ?: "Unknown Device", this.address, this.uuids?.map {uuid -> uuid.toString() },)
 }

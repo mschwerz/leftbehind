@@ -1,4 +1,4 @@
-package com.schwerzl.leftbehind.datasource
+package com.schwerzl.leftbehind.data.datasource
 
 import android.content.Context
 import android.content.pm.PackageManager

@@ -1,7 +1,7 @@
 package com.schwerzl.leftbehind.di
 
-import com.schwerzl.leftbehind.datasource.AndroidBLEDataSource
-import com.schwerzl.leftbehind.datasource.BLEDataSource
+import com.schwerzl.leftbehind.data.datasource.AndroidBLEDataSource
+import com.schwerzl.leftbehind.data.datasource.BLEDataSource
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

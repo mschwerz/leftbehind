@@ -6,8 +6,8 @@ import android.content.Context
 import androidx.room.Room
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import com.schwerzl.leftbehind.database.AppDatabase
-import com.schwerzl.leftbehind.datasource.PermissionCheck
+import com.schwerzl.leftbehind.data.database.AppDatabase
+import com.schwerzl.leftbehind.data.datasource.PermissionCheck
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
