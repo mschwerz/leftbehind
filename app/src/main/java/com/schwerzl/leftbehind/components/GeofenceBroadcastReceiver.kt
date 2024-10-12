@@ -36,7 +36,9 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
         )
 
         val workManager = WorkManager.getInstance(context)
-        val syncRequest = OneTimeWorkRequestBuilder<CheckDevicesNearbyWorker>().build()
+        val syncRequest = OneTimeWorkRequestBuilder<CheckDevicesNearbyWorker>()
+            .setInputData(inputData)
+            .build()
 
         workManager.enqueue(syncRequest)
 

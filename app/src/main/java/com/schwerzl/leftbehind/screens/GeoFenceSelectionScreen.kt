@@ -91,6 +91,13 @@ fun GeoFenceScreen(
         composeMap?.let { map ->
             for(geofence in geofences) {
                 map.overlays.add(
+                    CircularOverlay(
+                        mapView = map,
+                        center = GeoPoint(geofence.lat, geofence.long),
+                        radius = 100.0)
+                )
+
+                map.overlays.add(
                     Marker(composeMap).apply {
                         position = GeoPoint(geofence.lat, geofence.long)
                         setOnMarkerClickListener { _, _ ->
@@ -99,13 +106,6 @@ fun GeoFenceScreen(
                             true
                         }
                     }
-                )
-                map.overlays.add(
-                    CircularOverlay(
-                        mapView = map,
-                        center = GeoPoint(geofence.lat, geofence.long),
-                        radius = 100.0
-                )
                 )
             }
             map.invalidate()
@@ -173,7 +173,8 @@ class CircularOverlay(
 
     init {
         paint.color = Color.Red.value.toInt() // Semi-transparent red
-        paint.style = android.graphics.Paint.Style.STROKE
+        paint.style = android.graphics.Paint.Style.FILL
+        paint.alpha = 100
 
         anchorPaint.color = Color.Blue.value.toInt()
         anchorPaint.style = android.graphics.Paint.Style.FILL
@@ -204,6 +205,7 @@ class CircularOverlay(
         for (anchor in anchors) {
             canvas.drawCircle(anchor.x.toFloat(), anchor.y.toFloat(), 10f, anchorPaint)
         }
+        update(centerPoint, radius)
     }
 
     fun isAnchorTouched(x: Int, y: Int): Anchor? {
