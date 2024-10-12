@@ -5,9 +5,11 @@ import android.content.Context
 import android.content.Intent
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
+import androidx.work.workDataOf
 import com.google.android.gms.location.GeofenceStatusCodes
 import com.google.android.gms.location.GeofencingEvent
 import com.schwerzl.leftbehind.data.worker.CheckDevicesNearbyWorker
+import com.schwerzl.leftbehind.data.worker.TRIGGERING_GEOFENCE_KEY
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 
@@ -27,6 +29,11 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
                 " Trigger ${geofencingEvent.triggeringGeofences}" +
                 " Transition ${geofencingEvent.geofenceTransition}"
         Timber.d(alertString)
+        val triggeringGeoFenceIds = geofencingEvent.triggeringGeofences?.map { it.requestId } ?: emptyList()
+
+        val inputData = workDataOf(
+         TRIGGERING_GEOFENCE_KEY to triggeringGeoFenceIds.toTypedArray()
+        )
 
         val workManager = WorkManager.getInstance(context)
         val syncRequest = OneTimeWorkRequestBuilder<CheckDevicesNearbyWorker>().build()

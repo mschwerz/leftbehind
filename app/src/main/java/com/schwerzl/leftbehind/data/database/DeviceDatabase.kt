@@ -6,6 +6,7 @@ import androidx.room.Database
 import androidx.room.Delete
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.Insert
 import androidx.room.PrimaryKey
 import androidx.room.Query
@@ -56,17 +57,20 @@ data class UserGeoFenceEntity(
 
 
 @Entity(
+    primaryKeys = ["geofenceId", "deviceRequestIdentifier"],
     foreignKeys = [
         ForeignKey(entity = UserGeoFenceEntity::class, parentColumns = ["uid"], childColumns = ["geofenceId"],
+            onUpdate = ForeignKey.CASCADE, onDelete = ForeignKey.CASCADE),
+        ForeignKey(entity = DeviceEntity::class, parentColumns = ["address"], childColumns = ["deviceRequestIdentifier"],
             onUpdate = ForeignKey.CASCADE, onDelete = ForeignKey.CASCADE)
-    ]
+    ],
+    indices = [Index(value = ["deviceRequestIdentifier"])] // Add this line
 )
 
 //Connects the user requested geofence to the device's geofence manager
 data class DeviceRegisteredGeoFenceEntity(
-    @PrimaryKey
-    @ColumnInfo(name= "geofenceId") val geofenceId: Int,
-    @ColumnInfo(name= "deviceRequestIdentifier") val requestId : String,
+    @ColumnInfo(name= "geofenceId") val geofenceId: String,
+    @ColumnInfo(name= "deviceRequestIdentifier") val deviceRequestIdentifier : String,
 )
 
 @Dao
@@ -91,7 +95,22 @@ interface UserGeoFenceDao{
 
 @Dao
 interface DeviceRegisteredGeoFenceDao{
+    @Query(
+        """
+        SELECT T2.* 
+        FROM DeviceRegisteredGeoFenceEntity AS T1
+        INNER JOIN DeviceEntity AS T2
+        ON T1.deviceRequestIdentifier = T2.address
+        WHERE T1.geofenceId = :geofenceId
+        """
+    )
+    fun getDevicesForGeofence(geofenceId: String): List<DeviceEntity>
 
+    @Insert
+    fun insertAll(vararg geofences: DeviceRegisteredGeoFenceEntity)
+
+    @Delete
+    fun delete(geofence: DeviceRegisteredGeoFenceEntity)
 }
 
 @Database(entities = [UserGeoFenceEntity::class, DeviceEntity::class,
