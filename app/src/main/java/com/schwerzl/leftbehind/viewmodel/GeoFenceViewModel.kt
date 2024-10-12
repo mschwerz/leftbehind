@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -48,14 +47,14 @@ class GeoFenceViewModel @Inject constructor(
     val currentUserLocation = _currentLocation.asStateFlow()
 
 
-    fun selectedMapPoint(lat: Double, long: Double) {
-        viewModelScope.launch {
-            withContext(backgroundDispatcher) {
-                Timber.d("Adding the point to the repo $lat, $long")
-                geoFenceRepository.addGeofence(lat, long)
-            }
-        }
-    }
+//    fun selectedMapPoint(lat: Double, long: Double) {
+//        viewModelScope.launch {
+//            withContext(backgroundDispatcher) {
+//                Timber.d("Adding the point to the repo $lat, $long")
+//                geoFenceRepository.addGeofence(lat, long)
+//            }
+//        }
+//    }
 
     fun onTapMarker(geoFenceUIData: GeoFenceUIData){
         viewModelScope.launch {

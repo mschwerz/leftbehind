@@ -113,7 +113,7 @@ private fun DeviceList(
 
 @Composable
 @Preview
-private fun DeviceItem(
+fun DeviceItem(
     modifier: Modifier = Modifier,
     device: BluetoothUIDevice = PreviewDevice
 ){

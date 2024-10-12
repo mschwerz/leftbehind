@@ -15,7 +15,7 @@ class GeoFenceRepository @Inject constructor(
     private val userGeoFenceDao: UserGeoFenceDao
 ) {
 
-    suspend fun addGeofence(lat: Double, long: Double) : UserGeoFence{
+    suspend fun addGeofence(lat: Double, long: Double, radius: Float) : UserGeoFence{
         Timber.d("addGeofence: $lat, $long")
         val entity = UserGeoFenceEntity(
             latitude = lat,

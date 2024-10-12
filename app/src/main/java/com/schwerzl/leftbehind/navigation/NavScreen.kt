@@ -15,6 +15,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.schwerzl.leftbehind.screens.AddGeoDeviceScreen
+import com.schwerzl.leftbehind.screens.GeoFenceMapScreen
 import com.schwerzl.leftbehind.screens.GeoFenceSelectionScreen
 import com.schwerzl.leftbehind.screens.ScanBeaconScreen
 import kotlinx.serialization.Serializable
@@ -48,13 +50,24 @@ fun NavScreen(
             composable<HomeScreen>{
                 ScanBeaconScreen()
             }
+            composable<GeofenceMapScreen> {
+                GeoFenceMapScreen(onAddGeoFence = {navController.navigate(MapScreen)})
+            }
 
             composable<MapScreen>{
-                //GeofencingScreen()
-                GeoFenceSelectionScreen()
+                GeoFenceSelectionScreen(onGeoFenceAccept = {
+                    navController.navigate(GeoDeviceScreen(it))
+                })
             }
             composable<SettingsScreen>{
                 ScanBeaconScreen()
+            }
+            composable<GeoDeviceScreen>{
+                AddGeoDeviceScreen(
+                    finishFlow = {
+                        navController.popBackStack(MapScreen, inclusive = false)
+                    }
+                )
             }
 
         }
@@ -72,8 +85,16 @@ object MapScreen
 @Serializable
 object SettingsScreen
 
+@Serializable
+object GeofenceMapScreen
+
+@Serializable
+data class GeoDeviceScreen(
+    val geofenceId: String
+)
+
 enum class Screens(val screen: String, val screenId: Any, val icon:ImageVector){
     HOME("Home", HomeScreen, Icons.Filled.Home),
-    MAP("Map", MapScreen, Icons.Filled.Email),
+    MAP("Map", GeofenceMapScreen, Icons.Filled.Email),
     SETTINGS("Settings", SettingsScreen, Icons.Filled.Settings)
 }
